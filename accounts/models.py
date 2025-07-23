@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.utils import timezone
 
 # Class for custom user manager
 class CustomUserManager(BaseUserManager):
@@ -42,6 +43,7 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=20, unique=True)
     roles = models.CharField(max_length=50, choices=ROLES_CHOICES, default='customer')  # e.g., customer, admin, vendor
     
+    
     # Fields for use
     USERNAME_FIELD = 'email'  # Use email as the username field
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number', 'roles'] # ields required for user creation
@@ -56,7 +58,9 @@ class CustomUser(AbstractUser):
 class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='userprofile')
     address = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default='profile_pics/default.jpg')
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True)
     
     
     def __str__(self):
