@@ -50,6 +50,35 @@ class CustomUser(AbstractUser):
     
     objects = CustomUserManager()  # Use the custom user manager
     
+    # Custom permissions
+    class Meta:
+        permissions = [
+            # Profile permissions
+            ("can_view_profile", "Can view user profile"),
+            ("can_edit_profile", "Can edit user profile"),
+            ("can_delete_profile", "Can delete user profile"),
+            
+            # Products permissions
+            ("can_view_products", "Can view products"),
+            ("can_add_product", "Can add product"),
+            ("can_edit_product", "Can edit product"),
+            ("can_delete_product", "Can delete product"),
+            
+            # Orders permissions
+            ("can_view_orders", "Can view orders"),
+            ("can_create_order", "Can create order"),
+            ("can_edit_order", "Can edit order"),
+            ("can_delete_order", "Can delete order"),
+            
+            # Cart permissions
+            
+            # User management permissions
+            ("can_view_users", "Can view users"),
+            ("can_add_user", "Can add user"),
+            ("can_edit_user", "Can edit user"),
+            ("can_delete_user", "Can delete user"),
+        ]
+    
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.email})"
     
