@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "reviews",
     "shipping",
     "audit_logs"
+    
+    # Third-party apps
 ]
 
 MIDDLEWARE = [
