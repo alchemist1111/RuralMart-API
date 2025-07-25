@@ -155,12 +155,16 @@ if not DEBUG:
     
 
 # Content Security Policy settings
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
-CSP_STYLE_SRC = ("'self'", "https://cdnjs.cloudflare.com")
-CSP_IMG_SRC = ("'self'", "data:", "https://example.com")
-CSP_FONT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
-CSP_CONNECT_SRC = ("'self'", "https://api.example.com")
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'connect-src': ("'self'", 'https://api.example.com'),
+        'default-src': ("'self'",),
+        'font-src': ("'self'", 'https://cdnjs.cloudflare.com'),
+        'img-src': ("'self'", 'data:', 'https://example.com'),
+        'script-src': ("'self'", 'https://cdnjs.cloudflare.com'),
+        'style-src': ("'self'", 'https://cdnjs.cloudflare.com'),
+    }
+}
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
