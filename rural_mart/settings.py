@@ -10,22 +10,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-)cq)%)t4#n@63-k97==gx19z$kg7yoc06ep2l^eia1(-wb&ew^"
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
+if not SECRET_KEY:
+    raise ValueError("No secret key set! Please set the DJANGO_SECRET_KEY environment variable.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 
 # Custom user configuration
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -47,10 +55,11 @@ INSTALLED_APPS = [
     "payments",
     "reviews",
     "shipping",
-    "audit_logs"
+    "audit_logs",
     
     # Third-party apps
     "csp",  # Content Security Policy
+    "corsheaders",  # CORS headers
 ]
 
 MIDDLEWARE = [
@@ -62,6 +71,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "rural_mart.urls"
@@ -88,10 +98,7 @@ WSGI_APPLICATION = "rural_mart.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(default=os.getenv('DATABASE_URL', 'sqlite:///' + str(BASE_DIR / "db.sqlite3")))
 }
 
 
@@ -130,6 +137,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -138,11 +146,43 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # SSL settings configuration
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 31536000
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    
+
+# Content Security Policy settings
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
+CSP_STYLE_SRC = ("'self'", "https://cdnjs.cloudflare.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://example.com")
+CSP_FONT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
+CSP_CONNECT_SRC = ("'self'", "https://api.example.com")
+
+# CORS settings
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+
+# CORS configuration
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]  
+
+CORS_ALLOWED_HEADERS = [
+    "Authorization",
+    "Content-Type",
+    "X-Custom-Header",
+]  
+
 
 
 # Logging and monitoring configuration
