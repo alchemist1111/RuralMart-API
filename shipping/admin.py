@@ -6,5 +6,5 @@ from .models import Shipping
 admin.site.register(Shipping)
 class ShippingAdmin(admin.ModelAdmin):
     list_display = ('order', 'shipping_address', 'tracking_number', 'status', 'shipping_date')
-    search_fields = ('order__id', 'tracking_number', 'shipping_address')
+    search_fields = ('tracking_number', 'shipping_address')
     list_filter = ('status', 'shipping_date')

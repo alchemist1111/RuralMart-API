@@ -4,8 +4,8 @@ from .models import AuditLog
 # Register the AuditLog model with the admin site
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
-    list_display = ('timestamp', 'user', 'action', 'object_id', 'object_repr')
-    search_fields = ('user__first_name', 'action', 'object_repr')
+    list_display = ('user', 'action')
+    search_fields = ('action', 'timestamp')
     list_filter = ('action', 'timestamp')
     ordering = ('-timestamp',)
     date_hierarchy = 'timestamp'
