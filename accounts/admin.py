@@ -3,7 +3,7 @@ from .models import UserProfile, CustomUser
 
 class CustomUserAdmin(admin.ModelAdmin):
     # Define the fields to display in the admin interface
-    list_display = ('first_name', 'last_name', 'email', 'phone_number', 'is_active', 'is_staff')
+    list_display = ('first_name', 'last_name', 'email', 'phone_number', 'is_active', 'is_staff', 'roles')
     
     # Search functionality
     search_fields = ('email', 'first_name', 'last_name', 'email')

@@ -39,7 +39,7 @@ class CustomUser(AbstractUser):
     username = None # Disable the default username
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True) # We will use email as the main authenticator
+    email = models.EmailField(unique=True, db_index=True) # We will use email as the main authenticator
     phone_number = models.CharField(max_length=20, unique=True)
     roles = models.CharField(max_length=50, choices=ROLES_CHOICES, default='customer')  # e.g., customer, admin, vendor
     
@@ -88,8 +88,18 @@ class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='userprofile')
     address = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default='profile_pics/default.jpg')
+    profile_picture_url = models.URLField(blank=True, null=True)  # For external profile picture URLs
+    bio = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # Function to save the profile picture url in the database
+    def save(self, *args, **kwargs):
+        if self.profile_picture:
+            self.profile_picture_url = self.profile_picture.url
+        else:
+            self.profile_picture_url = None
+        super(UserProfile, self).save(*args, **kwargs)   
     
     
     def __str__(self):
